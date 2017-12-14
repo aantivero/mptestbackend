@@ -1,0 +1,46 @@
+
+<div *ngIf="cuenta">
+    <h2><span jhiTranslate="debinappApp.cuenta.detail.title">Cuenta</span> {{cuenta.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="debinappApp.cuenta.nombre">Nombre</span></dt>
+        <dd>
+            <span>{{cuenta.nombre}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.cuenta.cbu">Cbu</span></dt>
+        <dd>
+            <span>{{cuenta.cbu}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.cuenta.aliasCbu">Alias Cbu</span></dt>
+        <dd>
+            <span>{{cuenta.aliasCbu}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.cuenta.banco">Banco</span></dt>
+        <dd>
+            <span>{{cuenta.banco}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.cuenta.saldo">Saldo</span></dt>
+        <dd>
+            <span>{{cuenta.saldo}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.cuenta.user">User</span></dt>
+        <dd>
+            {{cuenta.user?.login}}
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'cuenta/'+ cuenta.id + '/edit'} }]"
+            replaceUrl="true"
+            queryParamsHandling="merge"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+    </button>
+</div>

@@ -1,0 +1,91 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myCuentaLabel" jhiTranslate="debinappApp.cuenta.home.createOrEditLabel">Create or edit a Cuenta</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!cuenta.id">
+            <label for="id" jhiTranslate="global.field.id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="cuenta.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.nombre" for="field_nombre">Nombre</label>
+            <input type="text" class="form-control" name="nombre" id="field_nombre"
+                [(ngModel)]="cuenta.nombre" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.cbu" for="field_cbu">Cbu</label>
+            <input type="text" class="form-control" name="cbu" id="field_cbu"
+                [(ngModel)]="cuenta.cbu" required minlength="22" maxlength="22" pattern="(^[0-9]*$)"/>
+            <div [hidden]="!(editForm.controls.cbu?.dirty && editForm.controls.cbu?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.cbu?.errors?.required" jhiTranslate="entity.validation.required">
+                   This field is required.
+                </small>
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.cbu?.errors?.minlength" jhiTranslate="entity.validation.minlength" translateValues="{ min: 22 }">
+                   This field is required to be at least 22 characters.
+                </small>
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.cbu?.errors?.maxlength" jhiTranslate="entity.validation.maxlength" translateValues="{ max: 22 }">
+                   This field cannot be longer than 22 characters.
+                </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.cbu?.errors?.pattern" jhiTranslate="entity.validation.pattern" translateValues="{ pattern: 'Cbu' }">
+                    This field should follow pattern for "Cbu".
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.aliasCbu" for="field_aliasCbu">Alias Cbu</label>
+            <input type="text" class="form-control" name="aliasCbu" id="field_aliasCbu"
+                [(ngModel)]="cuenta.aliasCbu" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.banco" for="field_banco">Banco</label>
+            <input type="text" class="form-control" name="banco" id="field_banco"
+                [(ngModel)]="cuenta.banco" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.saldo" for="field_saldo">Saldo</label>
+            <input type="number" class="form-control" name="saldo" id="field_saldo"
+                [(ngModel)]="cuenta.saldo" required/>
+            <div [hidden]="!(editForm.controls.saldo?.dirty && editForm.controls.saldo?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.saldo?.errors?.required" jhiTranslate="entity.validation.required">
+                   This field is required.
+                </small>
+                <small class="form-text text-danger"
+                    [hidden]="!editForm.controls.saldo?.errors?.number" jhiTranslate="entity.validation.number">
+                    This field should be a number.
+                </small>
+            </div>
+        </div>
+
+        <!--<div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.cuenta.user" for="field_user">User</label>
+            <select class="form-control" id="field_user" name="user" [(ngModel)]="cuenta.user"  required>
+                <option *ngIf="!editForm.value.user" [ngValue]="null" selected></option>
+                <option [ngValue]="userOption.id === cuenta.user?.id ? cuenta.user : userOption" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.login}}</option>
+            </select>
+        </div>
+        <div [hidden]="!(editForm.controls.user?.dirty && editForm.controls.user?.invalid)">
+            <small class="form-text text-danger"
+                [hidden]="!editForm.controls.user?.errors?.required" jhiTranslate="entity.validation.required">
+                This field is required.
+            </small>
+        </div>-->
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+    </div>
+</form>

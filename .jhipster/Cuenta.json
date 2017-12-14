@@ -1,0 +1,56 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "user",
+            "otherEntityName": "user",
+            "relationshipType": "many-to-one",
+            "relationshipValidateRules": [
+                "required"
+            ],
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "cuenta"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "nombre",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "cbu",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required",
+                "minlength",
+                "maxlength",
+                "pattern"
+            ],
+            "fieldValidateRulesMinlength": "22",
+            "fieldValidateRulesMaxlength": "22",
+            "fieldValidateRulesPattern": "(^[0-9]*$)"
+        },
+        {
+            "fieldName": "aliasCbu",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "banco",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "saldo",
+            "fieldType": "BigDecimal",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20171210212621",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "cuenta",
+    "jpaMetamodelFiltering": false,
+    "pagination": "infinite-scroll"
+}

@@ -1,0 +1,26 @@
+{
+    "debinappApp": {
+        "cuenta" : {
+            "home": {
+                "title": "Cuentas",
+                "createLabel": "Create a new Cuenta",
+                "createOrEditLabel": "Create or edit a Cuenta"
+            },
+            "created": "A new Cuenta is created with identifier {{ param }}",
+            "updated": "A Cuenta is updated with identifier {{ param }}",
+            "deleted": "A Cuenta is deleted with identifier {{ param }}",
+            "delete": {
+                "question": "Are you sure you want to delete Cuenta {{ id }}?"
+            },
+            "detail": {
+                "title": "Cuenta"
+            },
+            "nombre": "Nombre",
+            "cbu": "Cbu",
+            "aliasCbu": "Alias Cbu",
+            "banco": "Banco",
+            "saldo": "Saldo",
+            "user": "User"
+        }
+    }
+}
