@@ -5,6 +5,7 @@ import com.aantivero.debinapp.DebinappApp;
 import com.aantivero.debinapp.domain.Cuenta;
 import com.aantivero.debinapp.domain.User;
 import com.aantivero.debinapp.repository.CuentaRepository;
+import com.aantivero.debinapp.repository.UserRepository;
 import com.aantivero.debinapp.web.rest.errors.ExceptionTranslator;
 
 import org.junit.Before;
@@ -74,10 +75,13 @@ public class CuentaResourceIntTest {
 
     private Cuenta cuenta;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final CuentaResource cuentaResource = new CuentaResource(cuentaRepository);
+        final CuentaResource cuentaResource = new CuentaResource(cuentaRepository, userRepository);
         this.restCuentaMockMvc = MockMvcBuilders.standaloneSetup(cuentaResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)
