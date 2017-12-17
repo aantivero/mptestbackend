@@ -90,6 +90,12 @@ public class CuentaResource {
         if (cuenta.getId() == null) {
             return createCuenta(cuenta);
         }
+        final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
+        Optional<User> user = userRepository.findOneByLogin(userLogin);
+        if (!user.isPresent()) {
+            throw new InternalServerErrorException("User could not be found");
+        }
+        cuenta.setUser(user.get());
         Cuenta result = cuentaRepository.save(cuenta);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, cuenta.getId().toString()))

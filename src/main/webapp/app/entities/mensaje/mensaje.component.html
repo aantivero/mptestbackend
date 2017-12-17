@@ -1,0 +1,88 @@
+<div>
+    <h2>
+        <span jhiTranslate="debinappApp.mensaje.home.title">Mensajes</span>
+        <button class="btn btn-primary float-right jh-create-entity create-mensaje" [routerLink]="['/', { outlets: { popup: ['mensaje-new'] } }]">
+            <span class="fa fa-plus"></span>
+            <span  jhiTranslate="debinappApp.mensaje.home.createLabel">
+            Create new Mensaje
+            </span>
+        </button>
+    </h2>
+    <jhi-alert></jhi-alert>
+    <div class="row">
+    </div>
+    <br/>
+    <div class="table-responsive" *ngIf="mensajes">
+        <table class="table table-striped">
+            <thead>
+            <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="reset.bind(this)">
+            <th jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="estado"><span jhiTranslate="debinappApp.mensaje.estado">Estado</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="descripcion"><span jhiTranslate="debinappApp.mensaje.descripcion">Descripcion</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="monto"><span jhiTranslate="debinappApp.mensaje.monto">Monto</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="comentario"><span jhiTranslate="debinappApp.mensaje.comentario">Comentario</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="motivo"><span jhiTranslate="debinappApp.mensaje.motivo">Motivo</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="tipo"><span jhiTranslate="debinappApp.mensaje.tipo">Tipo</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="cuentaEmisor.aliasCbu"><span jhiTranslate="debinappApp.mensaje.cuentaEmisor">Cuenta Emisor</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="cuentaReceptor.aliasCbu"><span jhiTranslate="debinappApp.mensaje.cuentaReceptor">Cuenta Receptor</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="emisor.login"><span jhiTranslate="debinappApp.mensaje.emisor">Emisor</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="receptor.login"><span jhiTranslate="debinappApp.mensaje.receptor">Receptor</span> <span class="fa fa-sort"></span></th>
+            <th></th>
+            </tr>
+            </thead>
+            <tbody infinite-scroll (scrolled)="loadPage(page + 1)" [infiniteScrollDisabled]="page >= links['last']" [infiniteScrollDistance]="0">
+            <tr *ngFor="let mensaje of mensajes ;trackBy: trackId">
+                <td><a [routerLink]="['../mensaje', mensaje.id ]">{{mensaje.id}}</a></td>
+                <td jhiTranslate="{{'debinappApp.EstadoMensaje.' + mensaje.estado}}">{{mensaje.estado}}</td>
+                <td>{{mensaje.descripcion}}</td>
+                <td>{{mensaje.monto}}</td>
+                <td>{{mensaje.comentario}}</td>
+                <td>{{mensaje.motivo}}</td>
+                <td jhiTranslate="{{'debinappApp.TipoMensaje.' + mensaje.tipo}}">{{mensaje.tipo}}</td>
+                <td>
+                    <div *ngIf="mensaje.cuentaEmisor">
+                        <a [routerLink]="['../cuenta', mensaje.cuentaEmisor?.id ]" >{{mensaje.cuentaEmisor?.aliasCbu}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="mensaje.cuentaReceptor">
+                        <a [routerLink]="['../cuenta', mensaje.cuentaReceptor?.id ]" >{{mensaje.cuentaReceptor?.aliasCbu}}</a>
+                    </div>
+                </td>
+                <td>
+                    {{mensaje.emisor?.login}}
+                </td>
+                <td>
+                    {{mensaje.receptor?.login}}
+                </td>
+                <td class="text-right">
+                    <div class="btn-group flex-btn-group-container">
+                        <button type="submit"
+                                [routerLink]="['../mensaje', mensaje.id ]"
+                                class="btn btn-info btn-sm">
+                            <span class="fa fa-eye"></span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'mensaje/'+ mensaje.id + '/edit'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-primary btn-sm">
+                            <span class="fa fa-pencil"></span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                        </button>
+                        <button type="submit"
+                                [routerLink]="['/', { outlets: { popup: 'mensaje/'+ mensaje.id + '/delete'} }]"
+                                replaceUrl="true"
+                                queryParamsHandling="merge"
+                                class="btn btn-danger btn-sm">
+                            <span class="fa fa-remove"></span>
+                            <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

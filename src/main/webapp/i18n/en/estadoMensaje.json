@@ -1,0 +1,11 @@
+{
+    "debinappApp": {
+        "EstadoMensaje" : {
+            "null": "",
+            "CREADO": "CREADO",
+            "ENVIADO": "ENVIADO",
+            "ACEPTADO": "ACEPTADO",
+            "RECHAZADO": "RECHAZADO"
+        }
+    }
+}

@@ -1,0 +1,103 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myMensajeLabel" jhiTranslate="debinappApp.mensaje.home.createOrEditLabel">Create or edit a Mensaje</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!mensaje.id">
+            <label for="id" jhiTranslate="global.field.id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="mensaje.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.estado" for="field_estado">Estado</label>
+            <select class="form-control" name="estado" [(ngModel)]="mensaje.estado" id="field_estado"  required>
+                <option value="CREADO">{{'debinappApp.EstadoMensaje.CREADO' | translate}}</option>
+                <option value="ENVIADO">{{'debinappApp.EstadoMensaje.ENVIADO' | translate}}</option>
+                <option value="ACEPTADO">{{'debinappApp.EstadoMensaje.ACEPTADO' | translate}}</option>
+                <option value="RECHAZADO">{{'debinappApp.EstadoMensaje.RECHAZADO' | translate}}</option>
+            </select>
+            <div [hidden]="!(editForm.controls.estado?.dirty && editForm.controls.estado?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.estado?.errors?.required" jhiTranslate="entity.validation.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.descripcion" for="field_descripcion">Descripcion</label>
+            <input type="text" class="form-control" name="descripcion" id="field_descripcion"
+                [(ngModel)]="mensaje.descripcion" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.monto" for="field_monto">Monto</label>
+            <input type="number" class="form-control" name="monto" id="field_monto"
+                [(ngModel)]="mensaje.monto" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.comentario" for="field_comentario">Comentario</label>
+            <input type="text" class="form-control" name="comentario" id="field_comentario"
+                [(ngModel)]="mensaje.comentario" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.motivo" for="field_motivo">Motivo</label>
+            <input type="text" class="form-control" name="motivo" id="field_motivo"
+                [(ngModel)]="mensaje.motivo" />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.tipo" for="field_tipo">Tipo</label>
+            <select class="form-control" name="tipo" [(ngModel)]="mensaje.tipo" id="field_tipo"  required>
+                <option value="COBRO">{{'debinappApp.TipoMensaje.COBRO' | translate}}</option>
+                <option value="PAGO">{{'debinappApp.TipoMensaje.PAGO' | translate}}</option>
+                <option value="DEBITO">{{'debinappApp.TipoMensaje.DEBITO' | translate}}</option>
+                <option value="CREDITO">{{'debinappApp.TipoMensaje.CREDITO' | translate}}</option>
+            </select>
+            <div [hidden]="!(editForm.controls.tipo?.dirty && editForm.controls.tipo?.invalid)">
+                <small class="form-text text-danger"
+                   [hidden]="!editForm.controls.tipo?.errors?.required" jhiTranslate="entity.validation.required">
+                   This field is required.
+                </small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.cuentaEmisor" for="field_cuentaEmisor">Cuenta Emisor</label>
+            <select class="form-control" id="field_cuentaEmisor" name="cuentaEmisor" [(ngModel)]="mensaje.cuentaEmisor" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="cuentaOption.id === mensaje.cuentaEmisor?.id ? mensaje.cuentaEmisor : cuentaOption" *ngFor="let cuentaOption of cuentas; trackBy: trackCuentaById">{{cuentaOption.aliasCbu}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.cuentaReceptor" for="field_cuentaReceptor">Cuenta Receptor</label>
+            <select class="form-control" id="field_cuentaReceptor" name="cuentaReceptor" [(ngModel)]="mensaje.cuentaReceptor" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="cuentaOption.id === mensaje.cuentaReceptor?.id ? mensaje.cuentaReceptor : cuentaOption" *ngFor="let cuentaOption of cuentas; trackBy: trackCuentaById">{{cuentaOption.aliasCbu}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.emisor" for="field_emisor">Emisor</label>
+            <select class="form-control" id="field_emisor" name="emisor" [(ngModel)]="mensaje.emisor" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="userOption.id === mensaje.emisor?.id ? mensaje.emisor : userOption" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.login}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" jhiTranslate="debinappApp.mensaje.receptor" for="field_receptor">Receptor</label>
+            <select class="form-control" id="field_receptor" name="receptor" [(ngModel)]="mensaje.receptor" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="userOption.id === mensaje.receptor?.id ? mensaje.receptor : userOption" *ngFor="let userOption of users; trackBy: trackUserById">{{userOption.login}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+    </div>
+</form>

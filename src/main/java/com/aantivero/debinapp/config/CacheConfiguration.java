@@ -42,6 +42,9 @@ public class CacheConfiguration {
             cm.createCache(com.aantivero.debinapp.domain.Authority.class.getName(), jcacheConfiguration);
             cm.createCache(com.aantivero.debinapp.domain.User.class.getName() + ".authorities", jcacheConfiguration);
             cm.createCache(com.aantivero.debinapp.domain.Cuenta.class.getName(), jcacheConfiguration);
+            cm.createCache(com.aantivero.debinapp.domain.Mensaje.class.getName(), jcacheConfiguration);
+            cm.createCache(com.aantivero.debinapp.domain.Mensaje.class.getName() + ".cuentaEmisors", jcacheConfiguration);
+            cm.createCache(com.aantivero.debinapp.domain.Mensaje.class.getName() + ".cuentaReceptors", jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }

@@ -1,0 +1,73 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipName": "cuentaEmisor",
+            "otherEntityName": "cuenta",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "aliasCbu"
+        },
+        {
+            "relationshipName": "cuentaReceptor",
+            "otherEntityName": "cuenta",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "aliasCbu"
+        },
+        {
+            "relationshipName": "emisor",
+            "otherEntityName": "user",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "mensaje"
+        },
+        {
+            "relationshipName": "receptor",
+            "otherEntityName": "user",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "login",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "mensaje"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "estado",
+            "fieldType": "EstadoMensaje",
+            "fieldValues": "CREADO, ENVIADO, ACEPTADO, RECHAZADO",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "descripcion",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "monto",
+            "fieldType": "BigDecimal"
+        },
+        {
+            "fieldName": "comentario",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "motivo",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "tipo",
+            "fieldType": "TipoMensaje",
+            "fieldValues": "COBRO, PAGO, DEBITO, CREDITO",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "changelogDate": "20171217025349",
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "mensaje",
+    "jpaMetamodelFiltering": false,
+    "pagination": "infinite-scroll"
+}

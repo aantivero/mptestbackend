@@ -1,0 +1,66 @@
+
+<div *ngIf="mensaje">
+    <h2><span jhiTranslate="debinappApp.mensaje.detail.title">Mensaje</span> {{mensaje.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="debinappApp.mensaje.estado">Estado</span></dt>
+        <dd>
+            <span jhiTranslate="{{'debinappApp.EstadoMensaje.' + mensaje.estado}}">{{mensaje.estado}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.descripcion">Descripcion</span></dt>
+        <dd>
+            <span>{{mensaje.descripcion}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.monto">Monto</span></dt>
+        <dd>
+            <span>{{mensaje.monto}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.comentario">Comentario</span></dt>
+        <dd>
+            <span>{{mensaje.comentario}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.motivo">Motivo</span></dt>
+        <dd>
+            <span>{{mensaje.motivo}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.tipo">Tipo</span></dt>
+        <dd>
+            <span jhiTranslate="{{'debinappApp.TipoMensaje.' + mensaje.tipo}}">{{mensaje.tipo}}</span>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.cuentaEmisor">Cuenta Emisor</span></dt>
+        <dd>
+            <div *ngIf="mensaje.cuentaEmisor">
+                <a [routerLink]="['/cuenta', mensaje.cuentaEmisor?.id]">{{mensaje.cuentaEmisor?.aliasCbu}}</a>
+            </div>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.cuentaReceptor">Cuenta Receptor</span></dt>
+        <dd>
+            <div *ngIf="mensaje.cuentaReceptor">
+                <a [routerLink]="['/cuenta', mensaje.cuentaReceptor?.id]">{{mensaje.cuentaReceptor?.aliasCbu}}</a>
+            </div>
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.emisor">Emisor</span></dt>
+        <dd>
+            {{mensaje.emisor?.login}}
+        </dd>
+        <dt><span jhiTranslate="debinappApp.mensaje.receptor">Receptor</span></dt>
+        <dd>
+            {{mensaje.receptor?.login}}
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span jhiTranslate="entity.action.back"> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'mensaje/'+ mensaje.id + '/edit'} }]"
+            replaceUrl="true"
+            queryParamsHandling="merge"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span jhiTranslate="entity.action.edit"> Edit</span>
+    </button>
+</div>

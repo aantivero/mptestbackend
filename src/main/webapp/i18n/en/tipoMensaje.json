@@ -1,0 +1,11 @@
+{
+    "debinappApp": {
+        "TipoMensaje" : {
+            "null": "",
+            "COBRO": "COBRO",
+            "PAGO": "PAGO",
+            "DEBITO": "DEBITO",
+            "CREDITO": "CREDITO"
+        }
+    }
+}
