@@ -76,6 +76,16 @@ public class MensajeResource {
         mensaje.setEmisor(user.get());
         Cuenta cuentaEmisor = cuentaRepository.findByUserIsCurrentUser().get(0);
         mensaje.setCuentaEmisor(cuentaEmisor);
+        User receptor = mensaje.getReceptor();
+        Cuenta cuentaReceptor = null;
+        if (receptor.getId() == null) {
+            Optional<User> receptorByLogin = userRepository.findOneByLogin(receptor.getLogin());
+            cuentaReceptor = cuentaRepository.findCuentasByUser(receptorByLogin.get()).get(0);
+        } else {
+            cuentaReceptor = cuentaRepository.findCuentasByUser(receptor).get(0);
+        }
+
+        mensaje.setCuentaReceptor(cuentaReceptor);
         mensaje.setEstado(EstadoMensaje.ENVIADO);
         Mensaje result = mensajeRepository.save(mensaje);
         return ResponseEntity.created(new URI("/api/mensajes/" + result.getId()))
