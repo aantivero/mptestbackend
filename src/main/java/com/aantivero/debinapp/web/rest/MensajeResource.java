@@ -81,10 +81,12 @@ public class MensajeResource {
         if (receptor.getId() == null) {
             Optional<User> receptorByLogin = userRepository.findOneByLogin(receptor.getLogin());
             cuentaReceptor = cuentaRepository.findCuentasByUser(receptorByLogin.get()).get(0);
+            receptor = receptorByLogin.get();
         } else {
             cuentaReceptor = cuentaRepository.findCuentasByUser(receptor).get(0);
         }
 
+        mensaje.setReceptor(receptor);
         mensaje.setCuentaReceptor(cuentaReceptor);
         mensaje.setEstado(EstadoMensaje.ENVIADO);
         Mensaje result = mensajeRepository.save(mensaje);
