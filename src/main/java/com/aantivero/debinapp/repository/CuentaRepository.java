@@ -23,4 +23,6 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
     Page<Cuenta> findByUserIsCurrentUser(Pageable pageable);
 
     List<Cuenta> findCuentasByUser(User user);
+
+    Cuenta findCuentaByAliasCbuAndUser(String aliasCbu, User user);
 }

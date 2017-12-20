@@ -3,6 +3,7 @@ package com.aantivero.debinapp.web.rest;
 import com.aantivero.debinapp.domain.Cuenta;
 import com.aantivero.debinapp.domain.User;
 import com.aantivero.debinapp.domain.enumeration.EstadoMensaje;
+import com.aantivero.debinapp.domain.enumeration.TipoMensaje;
 import com.aantivero.debinapp.repository.CuentaRepository;
 import com.aantivero.debinapp.repository.UserRepository;
 import com.aantivero.debinapp.security.SecurityUtils;
@@ -25,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -68,28 +70,106 @@ public class MensajeResource {
         if (mensaje.getId() != null) {
             throw new BadRequestAlertException("A new mensaje cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
-        Optional<User> user = userRepository.findOneByLogin(userLogin);
-        if (!user.isPresent()) {
-            throw new InternalServerErrorException("User could not be found");
-        }
-        mensaje.setEmisor(user.get());
-        Cuenta cuentaEmisor = cuentaRepository.findByUserIsCurrentUser().get(0);
-        mensaje.setCuentaEmisor(cuentaEmisor);
-        User receptor = mensaje.getReceptor();
-        Cuenta cuentaReceptor = null;
-        if (receptor.getId() == null) {
-            Optional<User> receptorByLogin = userRepository.findOneByLogin(receptor.getLogin());
-            cuentaReceptor = cuentaRepository.findCuentasByUser(receptorByLogin.get()).get(0);
-            receptor = receptorByLogin.get();
+        if (mensaje.getEstado().equals(EstadoMensaje.ACEPTADO) && mensaje.getTipo().equals(TipoMensaje.COBRO)) {
+            return crearMensajeCobroAceptado(mensaje);
+        } else if(mensaje.getEstado().equals(EstadoMensaje.RECHAZADO) && mensaje.getTipo().equals(TipoMensaje.COBRO)){
+            return crearMensajeCobroRechazado(mensaje);
         } else {
-            cuentaReceptor = cuentaRepository.findCuentasByUser(receptor).get(0);
-        }
+            final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
+            Optional<User> user = userRepository.findOneByLogin(userLogin);
+            if (!user.isPresent()) {
+                throw new InternalServerErrorException("User could not be found");
+            }
+            mensaje.setEmisor(user.get());
+            Cuenta cuentaEmisor = cuentaRepository.findByUserIsCurrentUser().get(0);
+            mensaje.setCuentaEmisor(cuentaEmisor);
+            User receptor = mensaje.getReceptor();
+            Cuenta cuentaReceptor = null;
+            if (receptor.getId() == null) {
+                Optional<User> receptorByLogin = userRepository.findOneByLogin(receptor.getLogin());
+                cuentaReceptor = cuentaRepository.findCuentasByUser(receptorByLogin.get()).get(0);
+                receptor = receptorByLogin.get();
+            } else {
+                cuentaReceptor = cuentaRepository.findCuentasByUser(receptor).get(0);
+            }
 
-        mensaje.setReceptor(receptor);
+            mensaje.setReceptor(receptor);
+            mensaje.setCuentaReceptor(cuentaReceptor);
+            mensaje.setEstado(EstadoMensaje.ENVIADO);
+            Mensaje result = mensajeRepository.save(mensaje);
+            return ResponseEntity.created(new URI("/api/mensajes/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
+        }
+    }
+
+    private ResponseEntity<Mensaje> crearMensajeCobroAceptado(Mensaje mensaje) throws URISyntaxException {
+        final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
+        if (mensaje.getReceptor().getLogin() == null ||
+            mensaje.getReceptor().getLogin() == "" ||
+            mensaje.getEmisor().getLogin() == null ||
+            mensaje.getEmisor().getLogin() == ""){
+            throw new BadRequestAlertException("Error al crear Mensaje de Cobro Aceptado - faltan datos", ENTITY_NAME, "nadaporahora");
+        }
+        if (!userLogin.equals(mensaje.getReceptor().getLogin())) {
+            throw new BadRequestAlertException("Error al crear Mensaje de Cobro Aceptado - Usuario no valido", ENTITY_NAME, "nadaporahora");
+        }
+        Optional<User> userReceptor = userRepository.findOneByLogin(mensaje.getReceptor().getLogin());
+        Optional<User> userEmisor = userRepository.findOneByLogin(mensaje.getEmisor().getLogin());
+        if (!userReceptor.isPresent() || !userEmisor.isPresent()) {
+            throw new InternalServerErrorException("No se encontraron los usuarios requeridos");
+        }
+        Cuenta cuentaReceptor = cuentaRepository.findCuentaByAliasCbuAndUser(mensaje.getCuentaReceptor().getAliasCbu(), userReceptor.get());
+        Cuenta cuentaEmisor = cuentaRepository.findCuentaByAliasCbuAndUser(mensaje.getCuentaEmisor().getAliasCbu(), userEmisor.get());
+        mensaje.setReceptor(userReceptor.get());
         mensaje.setCuentaReceptor(cuentaReceptor);
-        mensaje.setEstado(EstadoMensaje.ENVIADO);
+        mensaje.setEmisor(userEmisor.get());
+        mensaje.setCuentaEmisor(cuentaEmisor);
         Mensaje result = mensajeRepository.save(mensaje);
+        BigDecimal saldoReceptor = cuentaReceptor.getSaldo();
+        saldoReceptor = saldoReceptor.subtract(mensaje.getMonto());
+        cuentaReceptor.setSaldo(saldoReceptor);
+        cuentaRepository.save(cuentaReceptor);
+        BigDecimal saldoEmisor = cuentaEmisor.getSaldo();
+        saldoEmisor = saldoEmisor.add(mensaje.getMonto());
+        cuentaEmisor.setSaldo(saldoEmisor);
+        cuentaRepository.save(cuentaEmisor);
+        return ResponseEntity.created(new URI("/api/mensajes/" + result.getId()))
+            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+
+    private ResponseEntity<Mensaje> crearMensajeCobroRechazado(Mensaje mensaje) throws URISyntaxException {
+        final String userLogin = SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new InternalServerErrorException("Current user login not found"));
+        if (mensaje.getReceptor().getLogin() == null ||
+            mensaje.getReceptor().getLogin() == "" ||
+            mensaje.getEmisor().getLogin() == null ||
+            mensaje.getEmisor().getLogin() == ""){
+            throw new BadRequestAlertException("Error al crear Mensaje de Cobro Aceptado - faltan datos", ENTITY_NAME, "nadaporahora");
+        }
+        if (!userLogin.equals(mensaje.getReceptor().getLogin())) {
+            throw new BadRequestAlertException("Error al crear Mensaje de Cobro Aceptado - Usuario no valido", ENTITY_NAME, "nadaporahora");
+        }
+        Optional<User> userReceptor = userRepository.findOneByLogin(mensaje.getReceptor().getLogin());
+        Optional<User> userEmisor = userRepository.findOneByLogin(mensaje.getEmisor().getLogin());
+        if (!userReceptor.isPresent() || !userEmisor.isPresent()) {
+            throw new InternalServerErrorException("No se encontraron los usuarios requeridos");
+        }
+        //Cuenta cuentaReceptor = cuentaRepository.findCuentaByAliasCbuAndUser(mensaje.getCuentaReceptor().getAliasCbu(), userReceptor.get());
+        Cuenta cuentaEmisor = cuentaRepository.findCuentaByAliasCbuAndUser(mensaje.getCuentaEmisor().getAliasCbu(), userEmisor.get());
+        mensaje.setReceptor(userReceptor.get());
+        //mensaje.setCuentaReceptor(cuentaReceptor);
+        mensaje.setEmisor(userEmisor.get());
+        mensaje.setCuentaEmisor(cuentaEmisor);
+        Mensaje result = mensajeRepository.save(mensaje);
+        //BigDecimal saldoReceptor = cuentaReceptor.getSaldo();
+        //saldoReceptor = saldoReceptor.subtract(mensaje.getMonto());
+        //cuentaReceptor.setSaldo(saldoReceptor);
+        //cuentaRepository.save(cuentaReceptor);
+        //BigDecimal saldoEmisor = cuentaEmisor.getSaldo();
+        //saldoEmisor = saldoEmisor.add(mensaje.getMonto());
+        //cuentaEmisor.setSaldo(saldoEmisor);
+        //cuentaRepository.save(cuentaEmisor);
         return ResponseEntity.created(new URI("/api/mensajes/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
